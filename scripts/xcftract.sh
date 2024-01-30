@@ -31,8 +31,6 @@ typeset -i file_idx=0
 typeset -i java_idx=0
 typeset -i tile_java_idx=0
 
-echo $dir
-
 while IFS=$'\t' read -r name dim
 do
 	if [[ $name == $ignore_filter ]]
