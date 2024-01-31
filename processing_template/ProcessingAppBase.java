@@ -11,6 +11,7 @@ public class ProcessingAppBase extends PApplet {
 	private VideoExport videoExport;
 	private boolean video_running = false;
 	protected boolean animate = false;
+	protected ImageLoader img;
 
 	public class Point extends verlet.Point {
 		@Override
@@ -32,6 +33,11 @@ public class ProcessingAppBase extends PApplet {
 
 	@Override
 	public void setup() {
+		img = new ImageLoader(this);
+
+		img.loadImages();
+		img.loadTileImages();
+
 		videoExport = new VideoExport(this, getClass().getName() + "_"
 				+ LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".mp4");
 
