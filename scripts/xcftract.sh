@@ -126,24 +126,24 @@ echo
 
 if (( $java_idx > 0 ))
 then
-	echo "	static final PImage[] images = new PImage[${java_idx}];"
+	echo "	final PImage[] images = new PImage[${java_idx}];"
 
 	for i in ${!java_name[@]}
 	do
 		if [[ $i == 0 ]]
 		then
-			echo "	static final int IDX_${java_name[$i]^^} = 0;	// ${i}"
+			echo "	final int IDX_${java_name[$i]^^} = 0;	// ${i}"
 		else
-			echo "	static final int IDX_${java_name[$i]^^} = IDX_${java_name[$((i - 1))]^^} + 1;	// ${i}"
+			echo "	final int IDX_${java_name[$i]^^} = IDX_${java_name[$((i - 1))]^^} + 1;	// ${i}"
 		fi
 	done
 
 	for i in ${!java_name[@]}
 	do
-		echo "	static PImage img_${java_name[$i]};"
+		echo "	PImage img_${java_name[$i]};"
 	done
 
-	echo "	static final String[] image_names = new String[] {"
+	echo "	final String[] image_names = new String[] {"
 
 	for i in ${!java_name[@]}
 	do
@@ -158,7 +158,7 @@ then
 	done
 
 	echo "	};"
-	echo "	static final int[] x_offs = {"
+	echo "	final int[] x_offs = {"
 
 	for i in ${!java_name[@]}
 	do
@@ -173,7 +173,7 @@ then
 	done
 
 	echo "	};"
-	echo "	static final int[] y_offs = {"
+	echo "	final int[] y_offs = {"
 
 	for i in ${!java_name[@]}
 	do
@@ -207,24 +207,24 @@ fi
 
 if (( $tile_java_idx > 0 ))
 then
-	echo "	static final PImage[][] tile_images = new PImage[${tile_java_idx}][];"
+	echo "	final PImage[][] tile_images = new PImage[${tile_java_idx}][];"
 
 	for i in ${!tile_java_name[@]}
 	do
 		if [[ $i == 0 ]]
 		then
-			echo "	static final int IDX_${tile_java_name[$i]^^} = 0;	// ${i}"
+			echo "	final int IDX_${tile_java_name[$i]^^} = 0;	// ${i}"
 		else
-			echo "	static final int IDX_${tile_java_name[$i]^^} = IDX_${tile_java_name[$((i - 1))]^^} + 1;	// ${i}"
+			echo "	final int IDX_${tile_java_name[$i]^^} = IDX_${tile_java_name[$((i - 1))]^^} + 1;	// ${i}"
 		fi
 	done
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo "	static PImage[] tile_imgs_${tile_java_name[$i]};"
+		echo "	PImage[] tile_imgs_${tile_java_name[$i]};"
 	done
 
-	echo "	static final int[] tile_number_images = {"
+	echo "	final int[] tile_number_images = {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -239,7 +239,7 @@ then
 	done
 
 	echo "	};"
-	echo "	static final String[] tile_image_names = new String[] {"
+	echo "	final String[] tile_image_names = new String[] {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -254,7 +254,7 @@ then
 	done
 
 	echo "	};"
-	echo "	static final int[][] tile_x_offs = {"
+	echo "	final int[][] tile_x_offs = {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -269,7 +269,7 @@ then
 	done
 
 	echo "	};"
-	echo "	static final int[][] tile_y_offs = {"
+	echo "	final int[][] tile_y_offs = {"
 
 	for i in ${!tile_java_name[@]}
 	do
