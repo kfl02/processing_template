@@ -40,7 +40,7 @@ public class Entity {
 		return point;
 	}
 
-	public void setLines(Collection<Line> lines) {
+	public void setLines(Collection<? extends Line> lines) {
 		for (Line l : lines) {
 			points.add(l.p1);
 			points.add(l.p2);
@@ -50,7 +50,7 @@ public class Entity {
 		this.lines.addAll(lines);
 	}
 
-	public void addLines(Collection<Line> lines) {
+	public void addLines(Collection<? extends Line> lines) {
 		for (Line l : lines) {
 			points.add(l.p1);
 			points.add(l.p2);
@@ -102,7 +102,7 @@ public class Entity {
 		}
 	}
 
-	public void constrainLines() {
+	public void moveLines() {
 		for (Line l : lines) {
 			l.constrain();
 		}
@@ -112,7 +112,7 @@ public class Entity {
 		movePoints();
 
 		for (int i = 0; i < iterations; i++) {
-			constrainLines();
+			moveLines();
 			constrainPoints();
 		}
 	}
