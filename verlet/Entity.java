@@ -1,8 +1,9 @@
 package verlet;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+
 import processing.core.PVector;
 
 public class Entity {
@@ -40,7 +41,7 @@ public class Entity {
 	}
 
 	public void setLines(Collection<Line> lines) {
-		for(Line l : lines) {
+		for (Line l : lines) {
 			points.add(l.p1);
 			points.add(l.p2);
 		}
@@ -50,7 +51,7 @@ public class Entity {
 	}
 
 	public void addLines(Collection<Line> lines) {
-		for(Line l : lines) {
+		for (Line l : lines) {
 			points.add(l.p1);
 			points.add(l.p2);
 		}
@@ -90,38 +91,38 @@ public class Entity {
 	}
 
 	public void movePoints() {
-		for(Point p : points) {
+		for (Point p : points) {
 			p.move();
 		}
 	}
 
 	public void constrainPoints() {
-		for(Point p : points) {
+		for (Point p : points) {
 			constraint.constrain(p);
 		}
 	}
 
-	public void moveLines() {
-		for(Line l : lines) {
-			l.move();
+	public void constrainLines() {
+		for (Line l : lines) {
+			l.constrain();
 		}
 	}
 
 	public void update() {
 		movePoints();
 
-		for(int i = 0; i < iterations; i++) {
-			moveLines();
+		for (int i = 0; i < iterations; i++) {
+			constrainLines();
 			constrainPoints();
 		}
 	}
 
 	public void draw() {
-		for(Point p : points) {
+		for (Point p : points) {
 			p.draw();
 		}
 
-		for(Line l : lines) {
+		for (Line l : lines) {
 			l.draw();
 		}
 	}

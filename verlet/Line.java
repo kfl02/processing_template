@@ -23,7 +23,7 @@ public class Line {
 		this.length = length;
 	}
 
-	public void move() {
+	public void constrain() {
 		PVector d = PVector.sub(p2.pos, p1.pos);
 
 		float dist = d.mag();
