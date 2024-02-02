@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import com.hamoid.VideoExport;
 
 import processing.core.PApplet;
+import processing.core.PVector;
 
 public class ProcessingAppBase extends PApplet {
 	private VideoExport videoExport;
@@ -14,6 +15,22 @@ public class ProcessingAppBase extends PApplet {
 	protected ImageLoader img;
 
 	public class Point extends verlet.Point {
+		public Point(PVector pos) {
+			super(pos);
+		}
+
+		public Point(PVector pos, PVector v) {
+			super(pos, v);
+		}
+
+		public Point(float x, float y) {
+			super(x, y);
+		}
+
+		public Point(float x, float y, float vx, float vy) {
+			super(x, y, vx, vy);
+		}
+
 		@Override
 		public void draw() {
 			if (draw) {
@@ -23,6 +40,14 @@ public class ProcessingAppBase extends PApplet {
 	}
 
 	public class Line extends verlet.Line {
+		public Line(Point p1, Point p2) {
+			super(p1, p2);
+		}
+
+		public Line(Point p1, Point p2, float length) {
+			super(p1, p2, length);
+		}
+
 		@Override
 		public void draw() {
 			if (draw) {
@@ -61,7 +86,8 @@ public class ProcessingAppBase extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		if (key == '#') {
+		switch (key) {
+		case '#':
 			if (!video_running) {
 				videoExport.startMovie();
 
@@ -75,10 +101,17 @@ public class ProcessingAppBase extends PApplet {
 
 				exit();
 			}
-		}
+			break;
 
-		if (key == 'm') {
+		case 'm':
 			animate = !animate;
+			break;
+
+		case '.':
+			if (!animate) {
+				animate();
+			}
+			break;
 		}
 	}
 }
