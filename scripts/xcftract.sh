@@ -26,6 +26,8 @@ done
 shift $((OPTIND - 1))
 
 xcf=$1
+xcf_base=${xcf%.xcf}
+xcf_base=${xcf_base^}
 dir=$(dirname $xcf)
 typeset -i file_idx=0
 typeset -i java_idx=0
@@ -37,7 +39,8 @@ do
 	then
 		: echo "IGNORING $name $dim"
 	else
-		j=${name//[^[:word:]]/_}
+		j=${name%.png}	# TODO: other known file extensions
+		j=${j//[^[:word:]]/_}
 		# w=${dim%x*}
 		# h=${dim#*x}
 		# h=${h%%+*}
@@ -116,34 +119,34 @@ echo
 echo "import processing.core.PImage;"
 echo "import processing.core.PApplet;"
 echo 
-echo "public class ImageLoader {"
+echo "public class ${xcf_base}ImageLoader extends ImageLoader {"
 echo "	private PApplet app;"
 echo 
-echo "	public ImageLoader(PApplet app) {"
+echo "	public ${xcf_base}ImageLoader(PApplet app) {"
 echo "		this.app = app;"
 echo "	}"
 echo
 
 if (( $java_idx > 0 ))
 then
-	echo "	final PImage[] images = new PImage[${java_idx}];"
+	echo "	public final PImage[] images = new PImage[${java_idx}];"
 
 	for i in ${!java_name[@]}
 	do
 		if [[ $i == 0 ]]
 		then
-			echo "	final int IDX_${java_name[$i]^^} = 0;	// ${i}"
+			echo "	public static final int IDX_${java_name[$i]^^} = 0;	// ${i}"
 		else
-			echo "	final int IDX_${java_name[$i]^^} = IDX_${java_name[$((i - 1))]^^} + 1;	// ${i}"
+			echo "	public static final int IDX_${java_name[$i]^^} = IDX_${java_name[$((i - 1))]^^} + 1;	// ${i}"
 		fi
 	done
 
 	for i in ${!java_name[@]}
 	do
-		echo "	PImage img_${java_name[$i]};"
+		echo "	public PImage img_${java_name[$i]};"
 	done
 
-	echo "	final String[] image_names = new String[] {"
+	echo "	private final String[] image_names = new String[] {"
 
 	for i in ${!java_name[@]}
 	do
@@ -158,7 +161,7 @@ then
 	done
 
 	echo "	};"
-	echo "	final int[] x_offs = {"
+	echo "	public final int[] x_offs = {"
 
 	for i in ${!java_name[@]}
 	do
@@ -173,7 +176,7 @@ then
 	done
 
 	echo "	};"
-	echo "	final int[] y_offs = {"
+	echo "	public final int[] y_offs = {"
 
 	for i in ${!java_name[@]}
 	do
@@ -189,6 +192,7 @@ then
 
 	echo "	};"
 
+	echo "	@Override"
 	echo "	public void loadImages() {"
 	echo "		for(int i = 0; i < $java_idx; i++) {"
 	echo "			images[i] = app.loadImage(image_names[i]);"
@@ -201,30 +205,31 @@ then
 
 	echo "	}"
 else
+	echo "	@Override"
 	echo "	public void loadImages() {"
 	echo "	}"
 fi
 
 if (( $tile_java_idx > 0 ))
 then
-	echo "	final PImage[][] tile_images = new PImage[${tile_java_idx}][];"
+	echo "	public final PImage[][] tile_images = new PImage[${tile_java_idx}][];"
 
 	for i in ${!tile_java_name[@]}
 	do
 		if [[ $i == 0 ]]
 		then
-			echo "	final int IDX_${tile_java_name[$i]^^} = 0;	// ${i}"
+			echo "	public final int IDX_${tile_java_name[$i]^^} = 0;	// ${i}"
 		else
-			echo "	final int IDX_${tile_java_name[$i]^^} = IDX_${tile_java_name[$((i - 1))]^^} + 1;	// ${i}"
+			echo "	public final int IDX_${tile_java_name[$i]^^} = IDX_${tile_java_name[$((i - 1))]^^} + 1;	// ${i}"
 		fi
 	done
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo "	PImage[] tile_imgs_${tile_java_name[$i]};"
+		echo "	public PImage[] tile_imgs_${tile_java_name[$i]};"
 	done
 
-	echo "	final int[] tile_number_images = {"
+	echo "	public final int[] tile_number_images = {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -239,7 +244,7 @@ then
 	done
 
 	echo "	};"
-	echo "	final String[] tile_image_names = new String[] {"
+	echo "	private final String[] tile_image_names = new String[] {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -254,7 +259,7 @@ then
 	done
 
 	echo "	};"
-	echo "	final int[][] tile_x_offs = {"
+	echo "	public final int[][] tile_x_offs = {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -269,7 +274,7 @@ then
 	done
 
 	echo "	};"
-	echo "	final int[][] tile_y_offs = {"
+	echo "	public final int[][] tile_y_offs = {"
 
 	for i in ${!tile_java_name[@]}
 	do
@@ -285,6 +290,7 @@ then
 
 	echo "	};"
 
+	echo "	@Override"
 	echo "	public void loadTileImages() {"
 	echo "		for(int i = 0; i < $tile_java_idx; i++) {"
 	echo "			tile_images[i] = new PImage[tile_number_images[$tile_java_idx]];"
@@ -300,6 +306,7 @@ then
 
 	echo "	}"
 else
+	echo "	@Override"
 	echo "	public void loadTileImages() {"
 	echo "	}"
 fi
