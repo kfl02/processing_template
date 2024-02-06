@@ -26,7 +26,7 @@ done
 shift $((OPTIND - 1))
 
 xcf=$1
-xcf_base=${xcf%.xcf}
+xcf_base=$(basename ${xcf%.xcf})
 xcf_base=${xcf_base^}
 dir=$(dirname $xcf)
 typeset -i file_idx=0
@@ -120,17 +120,9 @@ echo "import processing.core.PImage;"
 echo "import processing.core.PApplet;"
 echo 
 echo "public class ${xcf_base}ImageLoader extends ImageLoader {"
-echo "	private PApplet app;"
-echo 
-echo "	public ${xcf_base}ImageLoader(PApplet app) {"
-echo "		this.app = app;"
-echo "	}"
-echo
 
 if (( $java_idx > 0 ))
 then
-	echo "	public final PImage[] images = new PImage[${java_idx}];"
-
 	for i in ${!java_name[@]}
 	do
 		if [[ $i == 0 ]]
@@ -145,75 +137,10 @@ then
 	do
 		echo "	public PImage img_${java_name[$i]};"
 	done
-
-	echo "	private final String[] image_names = new String[] {"
-
-	for i in ${!java_name[@]}
-	do
-		echo -n "		\"$dir/${java_name[$i]}.png\""
-
-		if [[ $i == $((java_idx - 1)) ]]
-		then
-			echo "	// ${i}"
-		else
-			echo ",	// ${i}"
-		fi
-	done
-
-	echo "	};"
-	echo "	public final int[] x_offs = {"
-
-	for i in ${!java_name[@]}
-	do
-		echo -n "		${xoffset[$i]}"
-
-		if [[ $i == $((java_idx - 1)) ]]
-		then
-			echo "	// ${i}"
-		else
-			echo ",	// ${i}"
-		fi
-	done
-
-	echo "	};"
-	echo "	public final int[] y_offs = {"
-
-	for i in ${!java_name[@]}
-	do
-		echo -n "		${yoffset[$i]}"
-
-		if [[ $i == $((java_idx - 1)) ]]
-		then
-			echo "	// ${i}"
-		else
-			echo ",	// ${i}"
-		fi
-	done
-
-	echo "	};"
-
-	echo "	@Override"
-	echo "	public void loadImages() {"
-	echo "		for(int i = 0; i < $java_idx; i++) {"
-	echo "			images[i] = app.loadImage(image_names[i]);"
-	echo "		}"
-
-	for i in ${!java_name[@]}
-	do
-		echo "		img_${java_name[$i]} = images[IDX_${java_name[$i]^^}];"
-	done
-
-	echo "	}"
-else
-	echo "	@Override"
-	echo "	public void loadImages() {"
-	echo "	}"
 fi
 
 if (( $tile_java_idx > 0 ))
 then
-	echo "	public final PImage[][] tile_images = new PImage[${tile_java_idx}][];"
-
 	for i in ${!tile_java_name[@]}
 	do
 		if [[ $i == 0 ]]
@@ -228,12 +155,68 @@ then
 	do
 		echo "	public PImage[] tile_imgs_${tile_java_name[$i]};"
 	done
+fi
 
-	echo "	public final int[] tile_number_images = {"
+echo 
+echo "	public ${xcf_base}ImageLoader(PApplet app) {"
+echo "		super(app, ${java_idx}, ${tile_java_idx});"
+
+if (( $java_idx > 0 ))
+then
+	echo "		image_names = new String[] {"
+
+	for i in ${!java_name[@]}
+	do
+		echo -n "			\"$dir/${java_name[$i]}.png\""
+
+		if [[ $i == $((java_idx - 1)) ]]
+		then
+			echo "	// ${i}"
+		else
+			echo ",	// ${i}"
+		fi
+	done
+
+	echo "		};"
+	echo "		x_offs = new int[] {"
+
+	for i in ${!java_name[@]}
+	do
+		echo -n "			${xoffset[$i]}"
+
+		if [[ $i == $((java_idx - 1)) ]]
+		then
+			echo "	// ${i}"
+		else
+			echo ",	// ${i}"
+		fi
+	done
+
+	echo "		};"
+	echo "		y_offs = new int[] {"
+
+	for i in ${!java_name[@]}
+	do
+		echo -n "			${yoffset[$i]}"
+
+		if [[ $i == $((java_idx - 1)) ]]
+		then
+			echo "	// ${i}"
+		else
+			echo ",	// ${i}"
+		fi
+	done
+
+	echo "		};"
+fi
+
+if (( $tile_java_idx > 0 ))
+then
+	echo "		tile_image_num = new int[] {"
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo -n "		${tile_number[$i]}"
+		echo -n "			${tile_number[$i]}"
 
 		if [[ $i == $((tile_java_idx - 1)) ]]
 		then
@@ -243,12 +226,12 @@ then
 		fi
 	done
 
-	echo "	};"
-	echo "	private final String[] tile_image_names = new String[] {"
+	echo "		};"
+	echo "		tile_image_names = new String[] {"
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo -n "		\"$dir/${tile_java_name[$i]}_%d.png\""
+		echo -n "			\"$dir/${tile_java_name[$i]}_%d.png\""
 
 		if [[ $i == $((tile_java_idx - 1)) ]]
 		then
@@ -258,12 +241,12 @@ then
 		fi
 	done
 
-	echo "	};"
-	echo "	public final int[][] tile_x_offs = {"
+	echo "		};"
+	echo "		tile_x_offs = new int[][] {"
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo -n "		{ ${tile_xoffset[$i]} }"
+		echo -n "			{ ${tile_xoffset[$i]} }"
 
 		if [[ $i == $((tile_java_idx - 1)) ]]
 		then
@@ -273,12 +256,12 @@ then
 		fi
 	done
 
-	echo "	};"
-	echo "	public final int[][] tile_y_offs = {"
+	echo "		};"
+	echo "		tile_y_offs = new int[][] {"
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo -n "		{ ${tile_yoffset[$i]} }"
+		echo -n "			{ ${tile_yoffset[$i]} }"
 
 		if [[ $i == $((tile_java_idx - 1)) ]]
 		then
@@ -288,13 +271,28 @@ then
 		fi
 	done
 
-	echo "	};"
+	echo "		};"
+fi
 
-	echo "	@Override"
-	echo "	public void loadTileImages() {"
+if (( $java_idx > 0 ))
+then
+	echo
+	echo "		for(int i = 0; i < $java_idx; i++) {"
+	echo "			images[i] = app.loadImage(image_names[i]);"
+	echo "		}"
+
+	for i in ${!java_name[@]}
+	do
+		echo "		img_${java_name[$i]} = images[IDX_${java_name[$i]^^}];"
+	done
+fi
+
+if (( $tile_java_idx > 0 ))
+then
+	echo
 	echo "		for(int i = 0; i < $tile_java_idx; i++) {"
-	echo "			tile_images[i] = new PImage[tile_number_images[$tile_java_idx]];"
-	echo "			for(int j = 0; j < tile_number_images[i]; j++) {"
+	echo "			tile_images[i] = new PImage[tile_image_num[i]];"
+	echo "			for(int j = 0; j < tile_image_num[i]; j++) {"
 	echo "				tile_images[i][j] = app.loadImage(String.format(image_names[i], j));"
 	echo "			}"
 	echo "		}"
@@ -303,12 +301,7 @@ then
 	do
 		echo "		tile_imgs_${tile_java_name[$i]} = tile_images[IDX_${tile_java_name[$i]^^}];"
 	done
-
-	echo "	}"
-else
-	echo "	@Override"
-	echo "	public void loadTileImages() {"
-	echo "	}"
 fi
 
+echo "	}"
 echo "}"
