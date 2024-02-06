@@ -33,6 +33,8 @@ typeset -i file_idx=0
 typeset -i java_idx=0
 typeset -i tile_java_idx=0
 
+mkdir -p $dir/$xcf_base
+
 while IFS=$'\t' read -r name dim
 do
 	if [[ $name == $ignore_filter ]]
@@ -67,9 +69,9 @@ do
 		then
 			rm -f ${j}_+([[:digit]]).png
 
-			convert "$xcf[$file_idx]" +repage ${tile_operators[$tile_idx]} $dir/${j}_%d.png
+			convert "$xcf[$file_idx]" +repage ${tile_operators[$tile_idx]} $dir/$xcf_base/${j}_%d.png
 
-			typeset -i n=$(ls $dir/${j}_+([[:digit:]]).png | sed -E "s/.*${j}_([[:digit:]]+)\.png/\1/" | sort -rn | head -1)
+			typeset -i n=$(ls $dir/$xcf_base/${j}_+([[:digit:]]).png | sed -E "s/.*${j}_([[:digit:]]+)\.png/\1/" | sort -rn | head -1)
 
 			# ws=$(eval identify -format '%w,' ${j}_{0..$n}.png)
 			# ws=${ws::-1}
@@ -79,16 +81,16 @@ do
 			# hs=${hs::-1}
 			# hs=${hs//+/}
 			# hs=${hs//,/, }
-			xs=$(eval identify -format "%[fx:page.x+${x}]," $dir/${j}_{0..$n}.png)
+			xs=$(eval identify -format "%[fx:page.x+${x}]," $dir/$xcf_base/${j}_{0..$n}.png)
 			xs=${xs::-1}
 			xs=${xs//,+/,}
 			xs=${xs//,/, }
-			ys=$(eval identify -format "%[fx:page.y+${y}]," $dir/${j}_{0..$n}.png)
+			ys=$(eval identify -format "%[fx:page.y+${y}]," $dir/$xcf_base/${j}_{0..$n}.png)
 			ys=${ys::-1}
 			ys=${ys//,+/,}
 			ys=${ys//,/, }
 			
-			eval 'for i in {0..'$n'}; do convert $dir/${j}_${i}.png +repage $dir/${j}_${i}.png; done'
+			eval 'for i in {0..'$n'}; do convert $dir/$xcf_base/${j}_${i}.png +repage $dir/$xcf_base/${j}_${i}.png; done'
 			
 			tile_java_name[$tile_java_idx]=$j
 			tile_number[$tile_java_idx]=$((n + 1))
@@ -99,7 +101,7 @@ do
 
 			tile_java_idx+=1
 		else
-			convert "$xcf[$file_idx]" +repage $dir/${j}.png
+			convert "$xcf[$file_idx]" +repage $dir/$xcf_base/${j}.png
 
 			java_name[$java_idx]=$j
 			# width[$java_idx]=$w
@@ -167,7 +169,7 @@ then
 
 	for i in ${!java_name[@]}
 	do
-		echo -n "			\"$dir/${java_name[$i]}.png\""
+		echo -n "			\"$dir/$xcf_base/${java_name[$i]}.png\""
 
 		if [[ $i == $((java_idx - 1)) ]]
 		then
@@ -231,7 +233,7 @@ then
 
 	for i in ${!tile_java_name[@]}
 	do
-		echo -n "			\"$dir/${tile_java_name[$i]}_%d.png\""
+		echo -n "			\"$dir/$xcf_base/${tile_java_name[$i]}_%d.png\""
 
 		if [[ $i == $((tile_java_idx - 1)) ]]
 		then
